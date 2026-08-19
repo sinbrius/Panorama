@@ -19,7 +19,7 @@ HaritaWeb; mahalle, lokasyon ve 360 derece panoramik görüntülerin hotspot (et
 
 ### 🗺️ Harita ve 360° Panorama Görünümü
 <!-- GIF veya ana ekran görüntüsü -->
-<img src="assets/demo.gif" alt="HaritaWeb Demo" width="850"/>
+<img src="assets/demo5.gif" alt="HaritaWeb Demo" width="850"/>
 
 ## 🛠️ Kullanılan Teknolojiler & Mimari
 
