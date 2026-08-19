@@ -1,0 +1,100 @@
+@model PanoramaDtoForUpdate
+<head>
+    <!-- Head kısmına -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+
+</head>
+<div class="text-center my-3">
+    <div class="display-6">Harita Yükleme</div>
+</div>
+
+<form asp-action="Update" method="post">
+<div class="text-danger" asp-validation-summary="All"></div>
+
+<input type="hidden" asp-for="PanoramaId">
+
+   <div class="form-group my-3 mt-3">
+    <label asp-for="PanoramaAd">Panorama Adı</label>
+    <input asp-for="PanoramaAd" type="text" class="form-control">
+   </div>
+   <div class="form-group my-3">
+    <label asp-for="PanoramaYolu">Dosya Yolu Giriniz</label>
+    <input asp-for="PanoramaYolu"  type="text" class="form-control">
+   </div>
+   <div class="form-group my-3">
+    <label asp-for="Tarih">Panorma Oluşturulma Tarihi</label>
+    <input asp-for="Tarih" type="date" class="form-control">
+   </div>
+   <div class="form-group my-3">
+    <label asp-for="PanoramaResimYolu">Panorma için önizlenecek resim yolu </label>
+    <input asp-for="PanoramaResimYolu" type="text" class="form-control">
+    
+   </div>
+    <div id="map" style="height: 400px !important; width:500px;"></div>
+
+
+    <div class="fom-group my-3">
+        <label asp-for="Latitude">Enlem (Latitude):</label>
+    <input type="text" id="latitude" asp-for="Latitude"  required>
+
+    </div>
+
+    <div class="form-group my-3">
+    <label asp-for="Longitude">Boylam (Longitude):</label>
+    <input type="text" id="longitude" asp-for="Longitude"  required>
+
+    </div>
+
+
+   
+   <div class="form-group my-3">
+    <label asp-for="PanoramaKategoriId">Panormanızın görünmesini istediğiniz kategoriyi seçiniz</label>
+     <a class="btn btn-warning btn-sm" asp-action="Index" asp-controller="PanoramaCategory" asp-area="Admin">Kategori
+                Ekle</a>
+    <select class="form-control" asp-for="PanoramaKategoriId" asp-items="@ViewBag.Categories"></select>
+</div>
+
+
+   <div class="form-group my-3"></div>
+        <div class="btn-group">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-solid fa-save"></i>
+                Save</button>
+            <i class=""></i>
+            <a asp-action="Index" class="btn btn-outline-primary">Back</a>
+
+        </div>
+    </div>
+</form>
+
+<script>
+    var map = L.map('map').setView([38.7312, 35.4787], 13); // Kayseri merkez gibi başlangıç
+    var marker;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '', // Yazıyı kaldırmak için
+    }).addTo(map);
+    L.Control.geocoder().addTo(map);
+
+
+    map.on('click', function (e) {
+        var lat = e.latlng.lat.toFixed(6);
+        var lng = e.latlng.lng.toFixed(6);
+
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+
+        // Marker varsa sil
+        if (marker) {
+            map.removeLayer(marker);
+        }
+
+        // Yeni marker ekle
+        marker = L.marker([lat, lng]).addTo(map);
+    });
+</script>

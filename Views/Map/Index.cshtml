@@ -1,0 +1,205 @@
+@model MapCategoryViewModel
+<div class=" my-3">
+    <div class="display-6">Kayseri Harita İndir</div>
+</div>
+
+
+<div class="sayfa mx-3">
+    @foreach (var cat in Model.Categories)
+    {
+        <div class="kutu my-4">
+            <div class="kutu-header">@cat.KategoriAdı</div>
+            <hr />
+            @if (cat.KategoriId == 5)
+            {
+                <div>
+                    <div class="d-flex justify-content-between align-items-center gap-3">
+                        <select class="form-select" id="IlceId" name="IlceId" asp-items="@ViewBag.Ilce">
+                            <option value="">İlçe Seçiniz</option>
+                        </select>
+
+                        <label class="mb-0">haritasını indirmek için</label>
+
+                        <a href="#" class="btn btn-primary indir-btn">Tıklayınız</a>
+                    </div>
+                    <div class="form-group my-3" id="kategoriAlanlari" style="display:none;">
+                        <label for="MahalleId">Mahalle Adi</label>
+                        <select for="MahalleId" class="form-select mt-2" id="MahalleId"></select>
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <div class="kutu-body">
+
+
+                    @if (cat.Haritalar != null && cat.Haritalar.Count == 1)
+                    {
+
+                        var map = cat.Haritalar.First();
+                        <div class="kutu-tekli d-flex">
+                            <div>
+                                <label>@map.HaritaAdı </label>
+                            </div>
+                            <div>
+                                <label>haritasını indirmek için</label>
+                                <a href="@map.DosyaYolu" class="btn btn-primary" download> Tıklayınız</a>
+                            </div>
+                        </div>
+                    }
+                    else if (cat.Haritalar != null && cat.Haritalar.Count > 1)
+                    {
+                        <div class="kutu-tekli d-flex">
+
+                            <div>
+
+                                <select class="form-select" onchange="updateDownloadLink(this)">
+                                    <option value="">Harita Seçiniz</option>
+                                    @foreach (var map in cat.Haritalar)
+                                    {
+                                        <option value="@map.DosyaYolu">@map.HaritaAdı</option>
+                                    }
+                                </select>
+
+                            </div>
+
+                            <div>
+                                <label>haritasını indirmek için</label>
+                                <a href="" class="btn btn-primary download-btn" download>Tıklayınız </a>
+                            </div>
+
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div>Harita bulunamadı.</div>
+                    }
+                </div>
+            }
+        </div>
+
+    }
+    
+
+</div>
+
+
+<style>
+    body {
+        ;
+    }
+
+    .kutu-header {
+        background-color: rgba(245, 245, 245, 1);
+        display: inline-block;
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .kutu {
+        border: 1px solid black;
+        background-color: white;
+
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        box-sizing: border-box;
+        padding: 2rem;
+
+    }
+
+    .sayfa {
+
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        /* 2'li kolon */
+        gap: 1rem;
+    }
+
+    .kutu-tekli {
+        justify-content: space-between;
+    }
+</style>
+
+<script>
+    function updateDownloadLink(selectElement) {
+        const filePath = selectElement.value;
+        const container = selectElement.closest(".kutu-tekli");
+        const downloadBtn = container.querySelector(".download-btn");
+
+        if (filePath) {
+            downloadBtn.href = filePath;
+            downloadBtn.setAttribute("download", ""); // İndirme aktif
+            downloadBtn.classList.remove("disabled");
+        } else {
+            downloadBtn.href = "#";
+            downloadBtn.removeAttribute("download");
+            downloadBtn.classList.add("disabled");
+        }
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const ilceSelect = document.getElementById("IlceId");
+        const mahalleSelect = document.getElementById("MahalleId");
+        const alan = document.getElementById("kategoriAlanlari");
+        const downloadBtn = document.querySelector(".indir-btn");
+
+        ilceSelect.addEventListener("change", function () {
+            selectedIlceId = this.value;
+
+
+            if (!selectedIlceId) {
+                alan.style.display = "none";
+                mahalleSelect.innerHTML = '<option>Mahalleler yüklenecek...</option>';
+                return;
+            }
+
+            fetch(`/Admin/Mahalle/GetMahalleByIlceId?ilceId=${selectedIlceId}`)
+                .then(response => response.json())
+                .then(data => {
+                    alan.style.display = "block";
+                    mahalleSelect.innerHTML = "";
+
+                    data.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.value;
+                        option.text = item.text;
+                        mahalleSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error("Mahalleler alınırken hata oluştu:", error);
+                });
+        });
+
+
+        mahalleSelect.addEventListener("change", function () {
+            const selectedIlceId = ilceSelect.value;
+            const selectedMahalleId = this.value;
+
+            if (!selectedMahalleId) return;
+
+            fetch(`/Map/GetMapByCategoryMahalle?categoryId=5&ilceId=${selectedIlceId}&mahalleId=${selectedMahalleId}`)
+
+                .then(response => response.json())
+                
+                .then(data => {
+                        if (data && data.filePath) {
+                            downloadBtn.href = data.filePath;
+                            downloadBtn.setAttribute("download", "");
+                            downloadBtn.classList.remove("disabled");
+                        } else {
+                            downloadBtn.href = "#";
+                            downloadBtn.removeAttribute("download");
+                            downloadBtn.classList.add("disabled");
+                        }
+                    })
+                        .catch(error => {
+                            console.error("Harita alınırken hata oluştu:", error);
+                        });
+                });
+        });
+
+</script>

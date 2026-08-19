@@ -1,0 +1,253 @@
+.panorama-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+.panorama-container .map{
+  position: absolute;
+  z-index: 100;
+  right: 0;
+}
+#panorama {
+  width: 100%;
+  margin: 0px;
+  position: absolute;
+  height: calc(100vh - 80px);
+}
+#ust-katman {
+  position: absolute;
+  z-index: 3;
+}
+body {
+  margin: 0px;
+  overflow-x: hidden;
+}
+#controls {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(72, 66, 66, 0.6);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  z-index: 10;
+  pointer-events: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: height 0.4s ease-in-out;
+  height: 240px; /* Açıkken toplam yükseklik */
+}
+
+#controls.hidden {
+  height: 80px; /* Sadece butonları kapsayacak yükseklik */
+}
+
+.overviewmenu {
+  height: 150px;
+  transition: height 0.4s ease-in-out;
+  align-items: center;
+
+  width: 900px; /* ← sabit genişlik */
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap; /* ← resimleri yan yana dizer */
+
+  transition: height 0.4s ease-in-out;
+  cursor: grab;
+  
+  
+}
+.overviewmenu.active{
+  cursor: grabbing;
+  user-select: none; /* ← önemli */
+}
+
+#controls.hidden .overviewmenu {
+  height: 0;
+}
+.overviewmenu::-webkit-scrollbar{
+  display: none;
+}
+
+.overviewmenu img{
+  width: 200px;
+  height: 120px;
+  padding: 10px;
+    display: inline-block; /* ← önemli, resimleri yatay hizalar */
+
+}
+.buttons{
+  width: 700px;
+}
+
+.ctrl {
+  margin-left: 10px;
+  
+  opacity: 1; /* Butonlar tam görünür */
+  padding: 0px 35px;
+  width: 40px;
+  height: 40px;
+  line-height: 20px;
+  text-align: center;
+  background: rgba(46, 45, 45, 0.85);
+  border-radius: 12px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-size: 18px;
+  color: white;
+  transition: background 0.3s ease;
+}
+.ctrl:hover {
+  background: rgba(200, 200, 200, 1);
+}
+.menu-btn {
+  margin-top: 30px;
+  left: 10px;
+  font-size: 25px;
+  color: #9ba1ab;
+  z-index: 1005;
+  position: absolute;
+
+  transition: left 0.3s ease;
+}
+.map-btn {
+  margin-top: 10px;
+  right: 0;
+  font-size: 25px;
+  color: #9ba1ab;
+  z-index: 1005;
+  position: absolute;
+
+  transition: right 0.3s ease;
+}
+.map-btn:hover{
+  color:white
+}
+.map-btn.shifted{
+  right: 530px;
+}
+.menu-btn.shifted {
+  left: 310px;
+}
+.menu-btn:hover {
+  color: rgba(200, 200, 200, 1);
+}
+.panorama-sidebar {
+  background: rgba(46, 45, 45, 0.85);
+  opacity: 0.1;
+  width: 400px;
+  height: calc(100vh - 80px);
+  top: 0;
+  position: absolute;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  transition: opacity 0.3s ease;
+  overflow-y: auto; /* Yalnızca dikey scroll */
+  overflow-x: hidden;
+}
+.panorama-sidebar li {
+  font-size: 18px;
+  opacity: 1;
+  color: white;
+}
+.ustmenu-ul {
+  margin-top: 20px;
+}
+
+.panorama-sidebar.active {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.panorama-item a {
+  text-decoration: none;
+  color: black;
+}
+.ilce-label{
+  font-size: 20px;
+}
+
+.ilce-label:hover{
+  color:rgb(45, 83, 139);
+}
+
+.kategori-label:hover{
+  color: rgb(45, 83, 139);
+}
+
+#kategoriSearch{
+  margin-top: 100px;
+  margin-right: 10px;
+  margin-left: 15px;
+  width:350px;
+  height:50px;
+  border-radius: 8px;
+  background-color: rgba(46, 45, 45, 0.85);
+  border:1px solid white;
+  color: white;
+  font-size: 16px ;
+  padding-left: 15px;
+}
+.ilce{
+  margin-top: 10px;
+}
+#aramaSonuclari{
+  margin-top: 20px;
+}
+.tarih{
+  position: absolute;
+  width: 100px;
+  bottom: 0;
+  right:5px;
+  color: white;
+  background-color: black;
+  font-size: 20px;
+}
+.map {
+  position: absolute;
+  top: 0; /* üst menü varsa yüksekliğini ayarla */
+  right: 0; /* sağdan gelsin */
+  width: 600px;
+  height: 700px;
+
+  background-color: white; /* Harita varsa zaten görünmeyecek ama ekledim */
+
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  z-index: 1000; /* diğer içeriklerin önünde olsun */
+}
+
+.map.active {
+  transform: translateX(0);
+}
+.leaflet-control-geocoder .leaflet-control-geocoder-form input {
+  width: 300px !important;
+  font-size: 16px !important;
+  padding: 8px !important;
+  border-radius: 8px !important;
+  
+}
+
+
+.leaflet-control-geocoder {
+    background: rgba(0,0,0,0.7);
+    border-radius: 10px !important;
+    padding: 5px;
+    box-shadow: 0 0 5px #000;
+}
+
+.leaflet-container{
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2)!important;
+  border-radius: 8px !important;
+}

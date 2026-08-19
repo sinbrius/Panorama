@@ -1,0 +1,267 @@
+@model IlcePanoramaViewModel
+@{
+    Layout = null;
+    ViewData["ShowLabel"] = false;
+    ViewData["ShowButton"] = false;
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+    <link rel="stylesheet" href="~/css/panorama.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panorama Kayseri</title>
+</head>
+
+<body>
+    <header>
+        <partial name="_Navbar" />
+    </header>
+    <div class="panorama-container">
+        <div class="map-button">
+            <button onclick="toggleMap()" id="map-btn" class="map-btn border-0 bg-transparent">
+                <i class="fas fa-solid fa-map fa-2xl"></i>
+            </button>
+            <div class="map" id="map"></div>
+        </div>
+        <div id="panorama">
+        </div>
+        <div class="controls" id="controls">
+            <div id="overviewmenu" class="overviewmenu"> <!--load imagesle üretilen görüntüler buraya gelir  -->
+            </div>
+            <div class="buttons">
+                <div class="ctrl" id="img-btn">
+                    <i class="fas fa-solid fa-images"></i><!--görüntüleri acılır kapanır yapan buton -->
+                </div>
+                <div class="ctrl" id="pan-up">&#9650;</div>
+                <div class="ctrl" id="pan-down">&#9660;</div>
+                <div class="ctrl" id="pan-left">&#9664;</div>
+                <div class="ctrl" id="pan-right">&#9654;</div>
+                <div class="ctrl" id="zoom-in">&plus;</div>
+                <div class="ctrl" id="zoom-out">&minus;</div>
+                <div class="ctrl" id="fullscreen">&#x2922;</div>
+            </div>
+        </div>
+        <div id="ust-katman">
+            <button onclick="toggleSidebar()" id="menu-btn" class="menu-btn border-0 bg-transparent">
+                <i class="fas fa-solid fa-bars fa-2xl"></i>
+            </button>
+            <div class="panorama-sidebar" id="panorama-sidebar">
+                <input type="text" id="kategoriSearch" placeholder="Cumhuriyet Meydanı..." " />
+                <ul class=" ustmenu-ul" id="ilceListesi">
+                @foreach (var item in Model.Ilce)
+                {
+                    if (item.IlceId == 6 || item.IlceId == 8 || item.IlceId == 9 || item.IlceId ==
+                    14)
+                    {
+                        continue;
+                    }
+                    <li class="ilce" data-ilceid="@item.IlceId">
+                        <label class="ilce-label" style="cursor: pointer;">@item.IlceAdi</label>
+                        <ul class="kategori-listesi" style="display: none;">
+                            @foreach (var cat in Model.Categories.Where(c => c.IlceId == item.IlceId))
+                            {
+                                var pano = Model.Panorama.FirstOrDefault(p => p.PanoramaKategoriId == cat.PanoramaKategoriId);
+                                if (pano != null)
+                                {
+                                    <li id="kategori-label" class="kategori-label"
+                                        onclick="panoramaLoad(@pano.PanoramaId); loadImages(@cat.PanoramaKategoriId); loadDate(@pano.PanoramaId)"
+                                        data-pan-date="@pano.Tarih.ToString("dd.MM.yyyy")" data-cat-id="@cat.PanoramaKategoriId"
+                                        data-cat-name="@cat.PanoramaKategoriAdı" data-pan-id="@pano.PanoramaId">
+                                        @cat.PanoramaKategoriAdı
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>@cat.PanoramaKategoriAdı <span style="color:red">(Panorama Yok)</span></li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                }
+                </ul>
+                <ul id="aramaSonuclari" style="display:none;"></ul>
+            </div>
+        </div>
+        <div id="tarih" class="tarih">
+        </div>
+    </div>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script src="~/js/panorama.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+
+</body>
+
+</html>
+
+<script>
+
+
+    function loadImages(catId) {
+        // Tüm panorama verileri
+        const panoramas = @Html.Raw(Json.Serialize(Model.Panorama));;
+        console.log(panoramas);
+        console.log("catId parametresi: ", catId);
+        const overview = document.getElementById("overviewmenu");
+        overview.innerHTML = ''; // Eski resimleri temizle
+        panoramas.forEach(pano => {
+            console.log(pano);
+            if (parseInt(pano.panoramaKategoriId) === parseInt(catId) && pano.panoramaResimYolu) {
+                const img = document.createElement("img");
+                img.src = pano.panoramaResimYolu;
+                img.style.width = "200px"; // İsteğe bağlı stil
+                img.style.height = "150px";
+                img.style.margin = "5px";
+                img.draggable = false;  // ❗ drag olayını engelle
+                // İşte burası önemli: tıklama olayını ekliyoruz
+                img.addEventListener("click", function () {
+                    panoramaLoad(pano.panoramaId);  // panoramaLoad fonksiyonunu çağırıyoruz
+                    loadDate(pano.panoramaId);
+                    console.log(pano.panoramaId);
+                    closeSidebar();
+                });
+                overview.appendChild(img);
+            }
+        });
+    }
+    function closeSidebar() {
+        const sidebar = document.getElementById("panorama-sidebar");
+        const menuBtn = document.getElementById("menu-btn");
+        sidebar.classList.remove("active");
+        menuBtn.classList.remove("shifted");
+    }
+    function loadDate(panId) {
+        const dateContainer = document.getElementById('tarih');
+        dateContainer.innerHTML = ''; // Önceki tarih bilgisini temizle
+
+        const panoramas = @Html.Raw(Json.Serialize(Model.Panorama));
+
+        const pano = panoramas.find(p => p.panoramaId === panId);
+        if (pano && pano.tarih) {
+            const tarih = new Date(pano.tarih); // ISO format veya geçerli tarihse
+            const gun = String(tarih.getDate()).padStart(2, '0');
+            const ay = String(tarih.getMonth() + 1).padStart(2, '0'); // Aylar 0'dan başlar
+            const yil = tarih.getFullYear();
+
+            const formattedDate = `${gun}.${ay}.${yil}`;
+
+            const yeniEleman = document.createElement("p");
+            yeniEleman.className = "tarih";
+            yeniEleman.textContent = formattedDate;
+            dateContainer.appendChild(yeniEleman);
+        }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        loadImages(1);
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("kategoriSearch");
+        const ilceListesi = document.getElementById("ilceListesi");
+        const aramaSonuclari = document.getElementById("aramaSonuclari");
+
+        searchInput.addEventListener("input", function () {
+            const searchText = this.value.trim().toLowerCase(); //metnin basındaki ve sonundaki boslukları silip kücültüyor
+
+            if (searchText === "") {
+                ilceListesi.style.display = "block";
+                aramaSonuclari.style.display = "none";
+                aramaSonuclari.innerHTML = ""; //aramasonuclarının icini bosalttı
+                return;
+            }
+
+            ilceListesi.style.display = "none";
+            aramaSonuclari.style.display = "block";
+            aramaSonuclari.innerHTML = "";
+
+            const kategoriler = document.querySelectorAll(".kategori-label");
+            kategoriler.forEach(function (kat) {
+                const isim = kat.textContent.toLowerCase();
+                if (isim && isim.includes(searchText)) {
+                    const yeniEleman = document.createElement("li");
+                    yeniEleman.className = "kategori-label";
+                    yeniEleman.textContent = kat.textContent;
+                    yeniEleman.setAttribute("data-cat-id", kat.getAttribute("data-cat-id"));
+                    yeniEleman.setAttribute("data-cat-name", kat.getAttribute("data-cat-name"));
+                    yeniEleman.setAttribute("data-pan-id", kat.getAttribute("data-pan-id"));
+
+                    // onclick eventi ekle
+                    yeniEleman.onclick = function () {
+                        panoramaLoad(kat.getAttribute("data-pan-id"));
+                        loadImages(kat.getAttribute("data-cat-id"));
+                    };
+
+                    aramaSonuclari.appendChild(yeniEleman);
+                }
+            });
+        });
+    });
+    const overview = document.getElementById("overviewmenu");
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    overview.addEventListener('mousedown', (e) => {
+        isDown = true;
+        overview.classList.add('active');  // istersen stil ekleyebilirsin
+        startX = e.pageX - overview.offsetLeft;
+        scrollLeft = overview.scrollLeft;
+    });
+    overview.addEventListener('mouseleave', () => {
+        isDown = false;
+        overview.classList.remove('active');
+    });
+    overview.addEventListener('mouseup', () => {
+        isDown = false;
+        overview.classList.remove('active');
+    });
+    overview.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - overview.offsetLeft;
+        const walk = (x - startX) * 1.5; // hızı artırmak için katsayı ekledim
+        overview.scrollLeft = scrollLeft - walk;
+    });
+    // Leaflet haritayı başlat
+    var map = L.map('map', {
+        zoomControl: false,
+    }).setView([38.7312, 35.4787], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: ''
+    }).addTo(map);
+    L.Control.geocoder().addTo(map);
+    fetch('@Url.Action("GetAllPanoramas", "Panorama")')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(panorama => {
+                if (panorama.latitude && panorama.longitude) {
+                    L.marker([panorama.latitude, panorama.longitude])
+                        .addTo(map)
+                        .on("click", function () {
+                            panoramaLoad(panorama.panoramaId);
+                            loadImages(panorama.panoramaKategoriId);
+                        })
+                        .bindPopup(`<b>${panorama.panoramaAd}</b>`);
+                }
+            });
+        })
+        .catch(err => console.error(err));
+</script>

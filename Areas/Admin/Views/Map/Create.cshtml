@@ -1,0 +1,119 @@
+@model MapDtoForInsertion
+<div class="text-center my-3">
+    <div class="display-6">Harita Yükleme</div>
+</div>
+
+
+
+<form method="Post" asp-action="Create">
+    <div class="text-danger" asp-validation-summary="All"></div>
+
+    <div class="form-group my-3">
+        <label asp-for="HaritaAdı">Harita İsmi</label>
+        <input asp-for="HaritaAdı" class="form-control" placeholder="Kayseri Belediye Sınırı">
+    </div>
+    <div class="form-group my-3">
+        <label asp-for="DosyaYolu">URL Giriniz</label>
+        <input asp-for="DosyaYolu" class="form-control" id="fileInput">
+    </div>
+
+
+    <div class="form-group my-3">
+        <label asp-for="DosyaTipi">Dosya Türü</label>
+        <input asp-for="DosyaTipi" class="form-control" id="fileTypeInput" readonly>
+    </div>
+    <div class="form-group my-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <label asp-for="KategoriId" class="mb-0">Kategori</label>
+            <a class="btn btn-warning btn-sm" asp-action="Index" asp-controller="Category" asp-area="Admin">Kategori
+                Ekle</a>
+        </div>
+        <select class="form-control mt-2" id="kategoriselect" asp-for="KategoriId"
+            asp-items="@ViewBag.Categories"></select>
+        <!-- Bu alan sadece KategoriId == 5 olunca görünsün -->
+        <div class="form-group my-3" id="kategori5Alanlari" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center">
+
+                <label for="IlceId">İlçe Adi</label>
+                <a class="btn btn-warning btn-sm" asp-action="Create" asp-controller="Mahalle" asp-area="Admin">Mahalle
+                    Ekle</a>
+            </div>
+            <select class="form-control mt-2" id="IlceId" for="IlceId" asp-items="@ViewBag.Ilce"></select>
+        </div>
+        <div class="form-group my-3" id="kategoriAlanlari" style="display:none;">
+            <label asp-for="MahalleId">Mahalle Adi</label>
+            <select asp-for="MahalleId" class="form-control mt-2" id="MahalleId"></select>
+        </div>
+    </div>
+
+
+    <div class="form-group my-3">
+        <div class="btn-group">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-solid fa-save"></i>
+                Save</button>
+            <i class=""></i>
+            <a asp-action="Index" class="btn btn-outline-primary">Back</a>
+
+        </div>
+    </div>
+</form>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const kategoriselect = document.getElementById("kategoriselect");
+        const kategori5Alanlari = document.getElementById("kategori5Alanlari");
+
+        const ilceSelect = document.getElementById("IlceId");
+        const mahalleSelect = document.getElementById("MahalleId");
+        const mahalleDiv = document.getElementById("kategoriAlanlari");
+
+        // Kategori 5 mi kontrol et
+        function kontrolEt() {
+            const kategoriMetni = kategoriselect.options[kategoriselect.selectedIndex].text;
+
+            if (kategoriMetni === "Kayseri Büyükşehir Belediyesi Sınırları İçerisindeki Mahallelerin Kent Rehberi (Kent Bilgi Sistemi İle MAKS Eşleştirilen)") {
+                kategori5Alanlari.style.display = "block";
+            } else {
+                kategori5Alanlari.style.display = "none";
+                mahalleDiv.style.display = "none"; // İlçe gizlenirse mahalleyi de gizle
+            }
+        }
+
+        // İlk kontrol
+        kontrolEt();
+
+        // Kategori değişince kontrol et
+        kategoriselect.addEventListener("change", kontrolEt);
+
+        // İlçe değişince mahalleleri getir
+        ilceSelect.addEventListener("change", function () {
+            const selectedIlceId = this.value;
+
+            if (!selectedIlceId) {
+                mahalleDiv.style.display = "none";
+                mahalleSelect.innerHTML = '<option>Mahalleler yüklenecek...</option>';
+                return;
+            }
+
+            fetch('@Url.Action("GetMahalleByIlceId", "Mahalle")?ilceId=' + selectedIlceId)
+                .then(response => response.json())
+                .then(data => {
+                    mahalleDiv.style.display = "block";
+                    mahalleSelect.innerHTML = ""; // Önce temizle
+
+                    data.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.value;  // value kısmı mahalle id
+                        option.text = item.text;    // text kısmı mahalle adı
+                        mahalleSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error("Hata:", error);
+                });
+        });
+    });
+</script>

@@ -1,0 +1,7 @@
+@model List<Kategori>
+    <h1>Kategoriler</h1>
+    <p>
+        @foreach(var cat in Model){
+            <p>@cat.KategoriAdı</p>
+        }
+    </p>

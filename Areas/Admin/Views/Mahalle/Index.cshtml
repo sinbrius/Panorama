@@ -1,0 +1,12 @@
+@model List<Mahalle>
+
+    <div class="text-center display-6">
+        Mahalleler
+    </div>
+
+    <div class="display-6">
+        @foreach(var mah in Model){
+            <p>@mah.MahalleAdi| @mah.Ilce.IlceAdi</p>
+            
+        }
+    </div>

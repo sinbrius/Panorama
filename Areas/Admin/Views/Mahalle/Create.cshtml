@@ -1,0 +1,30 @@
+@model MahalleDtoForInsertion
+
+
+<div class="text-center my-3">
+    <div class="display-6">Mahalle Ekleme</div>
+</div>
+
+
+<form method="Post" asp-action="Create">
+    <div class="text-danger" asp-validation-summary="All"></div>
+
+    <div class="form-group my-3">
+        <label asp-for="MahalleAdi">Mahalle İsmi</label>
+        <input asp-for="MahalleAdi" class="form-control" placeholder="Alevkışla">
+    </div>
+    <div class="form-group my-3">
+        <label asp-for="IlceId"></label>
+        <select class="form-control mt-2" asp-for="IlceId" asp-items="@ViewBag.Ilce"></select>
+    </div>
+    <div class="form-group my-3"></div>
+        <div class="btn-group">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-solid fa-save"></i>
+                Kaydet</button>
+            <i class=""></i>
+            <a asp-action="Index" class="btn btn-outline-primary">Geri Dön</a>
+
+        </div>
+    </div>
+</form>

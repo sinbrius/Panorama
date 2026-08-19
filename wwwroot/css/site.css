@@ -1,0 +1,195 @@
+/* Taban HTML ve body ayarları */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+
+
+#main-content{
+  height: 100vh;
+}
+
+/* HTML ve body yapısını dikey olarak düzenleyip tüm ekranı kaplaması sağlanıyor */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main alanı boş bile olsa ekranı kaplaması için */
+main {
+  flex: 1;
+}
+
+/* Buton ve form focus durumları için özel gölgeler */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Liste işaretlerini kaldır */
+ul {
+  list-style: none;
+}
+
+/* Form placeholder ayarları */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* Sidebar genel ayarları */
+#sidebar {
+  width: 20vw;
+  min-width: 50px;
+  max-width: 300px;
+  
+  margin-top: 80px; /* Navbar yüksekliği kadar boşluk bırak */
+  transition: width 0.3s ease;
+  background-color: rgba(66, 118, 164, 1);
+  height: 2000px;
+  min-height:1100px ;
+  max-height:3000px;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1040;
+}
+
+/* Sidebar daraltılmış haldeyken */
+#sidebar.collapsed {
+  width: 60px;
+}
+
+
+/* Menü butonu varsayılan konumu */
+#menu-toggle {
+ margin-left: 10px; /* Çok yüksek değil, ihtiyaç kadar */
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-top:0px;
+  
+}
+
+/* Sidebar daraltıldığında içerik alanı sola genişler */
+#main-body {
+  margin-left: calc(20vw);
+  transition: margin-left 0.3s ease;
+}
+
+body.sidebar-collapsed #main-body {
+  margin-left: 60px;
+}
+
+/* Sidebar daraltıldığında alt menü genişliği ayarlanır */
+#sidebar.collapsed .submenu {
+  width: 60px;
+}
+
+
+/* Sidebar link stilleri */
+#sidebar .nav-link {
+  color: white;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+}
+
+#sidebar .nav-link i {
+  margin-right: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Sidebar daraltıldığında nav text gizlenir */
+#sidebar.collapsed .nav-text {
+  display: none;
+}
+#sidebar-collapsed .logo{
+  display: none;
+}
+
+#header-left{
+
+  flex-grow: 1; /* ya da flex: 1 */
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+}
+
+
+
+.nav-text {
+  margin-left: 10px;
+  display: flex;
+  height: auto;
+}
+
+/* Menü öğesi sınırı */
+.sid-item {
+  border: 1px solid grey;
+}
+
+/* Alt menü varsayılan gizli */
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.4s;
+}
+
+/* Alt menü açıldığında genişler */
+.submenu.open {
+  max-height: 500px;
+}
+
+/*Navbar Stili */
+
+.navbardegil{
+    width: 150vw;
+    min-width:60px ;
+    max-width:2303px ;
+    background-color: rgb(45, 95, 139);
+    height:80px;
+}
+
+.header-right{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-right a{
+  text-decoration: none;
+  color: black;
+  margin-left: 20px;
+  
+
+}

@@ -1,0 +1,50 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+<div id="sidebar" class="sidebar expanded ">
+  <ul class="nav flex-column">
+    <li class="sid-item">
+      <a asp-action="Index" asp-controller="Home" class="nav-link">
+        <i class="fas fa-solid fa-home"></i>
+        <span class="nav-text" style="margin-left: 10px;">Anasayfa</span>
+      </a>
+    </li>
+    <li class="sid-item">
+      <a href="/Admin/Map" class="nav-link">
+        <i class="fas fa-solid fa-globe"></i>
+        <span class="nav-text">Harita Listesi</span>
+        
+      </a>
+     
+    </li>
+    <li class="sid-item">
+      <a asp-action="Create" asp-controller="Map" asp-area="Admin" class="nav-link">
+        <i class="fas fa-solid fa-globe"></i>
+        <span class="nav-text">Harita Yükleme</span>
+        
+      </a>
+     
+    </li>
+    <li class="sid-item">
+      <a asp-action="Index" asp-controller="Panorama" asp-area="Admin" class="nav-link">
+        <i class="fas fa-solid fa-panorama"></i>
+        <span class="nav-text">Panorama Listesi</span>
+        <i class="fas fa-solid fa-list" style="margin-left: 10px;"></i>
+        
+      </a>
+     
+    </li>
+    <li class="sid-item">
+      <a asp-action="Create" asp-controller="Panorama" asp-area="Admin" class="nav-link">
+        <i class="fas fa-solid fa-panorama"></i>
+        <span class="nav-text">Panorama Yükleme</span>
+        <i class="fas fa-solid fa-plus" style="margin-left: 10px;"></i>
+        
+      </a>
+     
+    </li>
+    
+    
+    <!-- Diğer menüler aynı şekilde -->
+  </ul>
+</div>

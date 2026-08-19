@@ -1,0 +1,25 @@
+@{
+  var showbutton = ViewData["ShowButton"] as bool? ?? true;
+  var showlabel = ViewData["ShowLabel"] as bool? ?? true;
+}
+
+<div class="navbardegil d-flex">
+  <div class="header-left d-flex ">
+    <div class="logo">
+      <a href=""><img src="\img\kbbLogo.png" alt="Logo1" id="Logo1"></a>
+      <a asp-area="" asp-action="Index" asp-controller="Home"><img src="\img\cbs_ok6.png" alt=""></a>
+    </div>
+    @if (showbutton)
+    {
+      <button onclick="toggleSidebar()" class="menu-toggle border-0 bg-transparent" id="menu-toggle">
+        <i class="fas fa-bars fa-2xl text-white"></i>
+      </button>
+    }
+  </div>
+  @if (showlabel)
+  {
+    <div class="header-right" >
+            <a href=" https://cbs.kayseri.bel.tr/duyurular">TÜM DUYURULAR</a>
+    </div>
+  }
+</div>

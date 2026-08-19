@@ -1,0 +1,61 @@
+﻿@{
+    var currentArea = ViewContext.RouteData.Values["area"]?.ToString();
+    var showSidebar = ViewData["ShowSidebar"] as bool? ?? true;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Harita</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Harita.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+</head>
+
+<body>
+
+
+    <header>
+        <partial name="_Navbar" />
+       
+
+    </header>
+    <div class="container-fluid m-0">
+
+        <main role="main" class="main-content" id="main-content">
+            <div class="main-class">
+                @if (showSidebar)
+                {
+                    <div class="sidebar">
+                        @if (currentArea == "Admin")
+                        {
+                            <partial name="_AdminSidebar" />
+                        }
+                        else
+                        {
+                            <partial name="_UserSidebar" />
+                        }
+                    </div>
+                }
+                <div class="main-body " id="main-body">
+                    @RenderBody()
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/font-awesome/js/all.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
